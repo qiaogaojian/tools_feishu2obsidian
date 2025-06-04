@@ -14,11 +14,11 @@ interface MyPluginSettings {
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {	
-	isForce: false,
-	outPath: 'D:/Git/Note/note_obsidian/3.商业/Vectora',
-	wikiUrl: 'https://hcn12zstv951.feishu.cn/wiki/settings/7510965301876064257',
-	appId: 'cli_a8b478f1783c900c',
-	appSecret: 'rbxgxIV441NhdO95EBp2Y0QvNtgt8qcj',
+	isForce: true,
+	outPath: 'path/to/output',
+	wikiUrl: 'wiki setting url',
+	appId: 'appId',
+	appSecret: 'appSecret',
 	enableLog: false,
 	feishu2mdPath: 'feishu2md'
 }
@@ -70,13 +70,13 @@ export default class MyPlugin extends Plugin {
 				];
 
 				if (isForce) {
-					args.push('--isForce');
+                    args = ['--force', ...args];
 				}
 
 				const notification = new Notice('Feishu to Markdown Sync: 同步中...', 0);
 
 				if (enableLog) {
-					console.log(`Executing command: ${command} ${args.join(' ')}`);
+					console.log(`Executing command: ${command} dl ${args.join(' ')}`);
 				}
 
 				const child = exec(command + ' dl ' + args.join(' '), (error, stdout, stderr) => {

@@ -1,6 +1,6 @@
 {
 	"id": "feishu2obsidian",
-	"name": "Feishu to Obsidian Sync",
+	"name": "Feishu2Obsidian",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "A plugin to synchronize Feishu Wiki pages to Obsidian using feishu2md.exe, with configurable parameters.",
