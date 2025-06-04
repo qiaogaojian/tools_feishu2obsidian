@@ -1,10 +1,10 @@
 {
-	"id": "feishu-to-markdown-sync",
-	"name": "Feishu to Markdown Sync",
+	"id": "feishu2obsidian",
+	"name": "Feishu to Obsidian Sync",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "A plugin to synchronize Feishu Wiki pages to Markdown files using feishu2md.exe, with configurable parameters.",
-	"author": "Obsidian",
+	"description": "A plugin to synchronize Feishu Wiki pages to Obsidian using feishu2md.exe, with configurable parameters.",
+	"author": "Vectora",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",
 	"isDesktopOnly": false
