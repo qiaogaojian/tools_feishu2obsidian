@@ -11,6 +11,7 @@ interface MyPluginSettings {
 	appId: string;
 	appSecret: string;
 	enableLog: boolean;
+	feishu2mdPath: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
@@ -20,7 +21,8 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	wikiUrl: 'https://hcn12zstv951.feishu.cn/wiki/settings/7510965301876064257',
 	appId: 'cli_a8b478f1783c900c',
 	appSecret: 'rbxgxIV441NhdO95EBp2Y0QvNtgt8qcj',
-	enableLog: false
+	enableLog: false,
+	feishu2mdPath: 'feishu2md'
 }
 
 export default class MyPlugin extends Plugin {
@@ -59,38 +61,40 @@ export default class MyPlugin extends Plugin {
 					key: "o",
 				},
 			],
-			callback: () => {
-				const { isForce, outPath, wikiUrl, appId, appSecret, enableLog } = this.settings;
-				let command = `feishu2md.exe dl`;
-				if (isForce) {
-					command += ` --force`;
-				}
-				command += ` --wiki -o "${outPath}" "${wikiUrl}" --appId "${appId}" --appSecret "${appSecret}"`;
+			callback: async () => {
+				const { isForce, outPath, wikiUrl, appId, appSecret, enableLog, feishu2mdPath } = this.settings;
+				const command = feishu2mdPath || 'feishu2md.exe';
+				let args = [
+					'--outPath', outPath,
+					'--wikiUrl', wikiUrl,
+					'--appId', appId,
+					'--appSecret', appSecret
+				];
 
-				new Notice('Feishu to Markdown Sync: Starting...');
+				if (isForce) {
+					args.push('--isForce');
+				}
+
+				const notification = new Notice('Feishu to Markdown Sync: 同步中...', 0);
 
 				if (enableLog) {
-					console.log(`Executing command: ${command}`);
+					console.log(`Executing command: ${command} ${args.join(' ')}`);
 				}
 
-				exec(command, (error, stdout, stderr) => {
+				const child = execFile(command, args, (error, stdout, stderr) => {
+					notification.hide();
 					if (error) {
-						new Notice(`Feishu to Markdown Sync Error: ${error.message}`);
+						new Notice(`Feishu to Markdown Sync: 同步失败 - ${error.message}`);
 						if (enableLog) {
-							console.error(`exec error: ${error}`);
+							console.error(`Error executing feishu2md: ${error.message}`);
+							console.error(`Stderr: ${stderr}`);
 						}
 						return;
 					}
-					if (stderr) {
-						new Notice(`Feishu to Markdown Sync Stderr: ${stderr}`);
-						if (enableLog) {
-							console.error(`stderr: ${stderr}`);
-						}
-						return;
-					}
-					new Notice('Feishu to Markdown Sync: Completed successfully!');
+					new Notice('Feishu to Markdown Sync: 同步完成！');
 					if (enableLog) {
-						console.log(`stdout: ${stdout}`);
+						console.log(`Stdout: ${stdout}`);
+						console.log(`Stderr: ${stderr}`);
 					}
 				});
 			}
@@ -251,6 +255,17 @@ class SampleSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.enableLog)
 				.onChange(async (value) => {
 					this.plugin.settings.enableLog = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Feishu2md Path')
+			.setDesc('Specify the path to the feishu2md.exe executable. If not set, it will default to feishu2md.exe in the system PATH.')
+			.addText(text => text
+				.setPlaceholder('Enter feishu2md.exe path')
+				.setValue(this.plugin.settings.feishu2mdPath)
+				.onChange(async (value) => {
+					this.plugin.settings.feishu2mdPath = value;
 					await this.plugin.saveSettings();
 				}));
 	}
