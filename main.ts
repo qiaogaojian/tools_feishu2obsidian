@@ -10,6 +10,7 @@ interface MyPluginSettings {
 	wikiUrl: string;
 	appId: string;
 	appSecret: string;
+	enableLog: boolean;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
@@ -18,7 +19,8 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	outPath: 'D:/Git/Note/note_obsidian/3.商业/Vectora',
 	wikiUrl: 'https://hcn12zstv951.feishu.cn/wiki/settings/7510965301876064257',
 	appId: 'cli_a8b478f1783c900c',
-	appSecret: 'rbxgxIV441NhdO95EBp2Y0QvNtgt8qcj'
+	appSecret: 'rbxgxIV441NhdO95EBp2Y0QvNtgt8qcj',
+	enableLog: false
 }
 
 export default class MyPlugin extends Plugin {
@@ -58,7 +60,7 @@ export default class MyPlugin extends Plugin {
 				},
 			],
 			callback: () => {
-				const { isForce, outPath, wikiUrl, appId, appSecret } = this.settings;
+				const { isForce, outPath, wikiUrl, appId, appSecret, enableLog } = this.settings;
 				let command = `feishu2md.exe dl`;
 				if (isForce) {
 					command += ` --force`;
@@ -67,19 +69,29 @@ export default class MyPlugin extends Plugin {
 
 				new Notice('Feishu to Markdown Sync: Starting...');
 
+				if (enableLog) {
+					console.log(`Executing command: ${command}`);
+				}
+
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
 						new Notice(`Feishu to Markdown Sync Error: ${error.message}`);
-						console.error(`exec error: ${error}`);
+						if (enableLog) {
+							console.error(`exec error: ${error}`);
+						}
 						return;
 					}
 					if (stderr) {
 						new Notice(`Feishu to Markdown Sync Stderr: ${stderr}`);
-						console.error(`stderr: ${stderr}`);
+						if (enableLog) {
+							console.error(`stderr: ${stderr}`);
+						}
 						return;
 					}
 					new Notice('Feishu to Markdown Sync: Completed successfully!');
-					console.log(`stdout: ${stdout}`);
+					if (enableLog) {
+						console.log(`stdout: ${stdout}`);
+					}
 				});
 			}
 		});
@@ -229,6 +241,16 @@ class SampleSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.appSecret)
 				.onChange(async (value) => {
 					this.plugin.settings.appSecret = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Enable Log')
+			.setDesc('Enable detailed logging for feishu2md command execution.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableLog)
+				.onChange(async (value) => {
+					this.plugin.settings.enableLog = value;
 					await this.plugin.saveSettings();
 				}));
 	}
