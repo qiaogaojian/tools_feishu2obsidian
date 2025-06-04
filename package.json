@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-feishu-to-markdown-sync",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Obsidian plugin to synchronize Feishu Wiki pages to Markdown files using feishu2md.exe, with configurable parameters.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",

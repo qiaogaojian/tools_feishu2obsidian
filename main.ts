@@ -1,13 +1,24 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { exec } from 'child_process';
 
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
 	mySetting: string;
+	isForce: boolean;
+	outPath: string;
+	wikiUrl: string;
+	appId: string;
+	appSecret: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+	mySetting: 'default',
+	isForce: false,
+	outPath: 'D:/Git/Note/note_obsidian/3.商业/Vectora',
+	wikiUrl: 'https://hcn12zstv951.feishu.cn/wiki/settings/7510965301876064257',
+	appId: 'cli_a8b478f1783c900c',
+	appSecret: 'rbxgxIV441NhdO95EBp2Y0QvNtgt8qcj'
 }
 
 export default class MyPlugin extends Plugin {
@@ -34,6 +45,42 @@ export default class MyPlugin extends Plugin {
 			name: 'Open sample modal (simple)',
 			callback: () => {
 				new SampleModal(this.app).open();
+			}
+		});
+		// This adds a command to run feishu2md
+		this.addCommand({
+			id: 'run-feishu2md',
+			name: 'Run Feishu to Markdown Sync',
+			hotkeys: [
+				{
+					modifiers: ["Mod", "Alt"],
+					key: "o",
+				},
+			],
+			callback: () => {
+				const { isForce, outPath, wikiUrl, appId, appSecret } = this.settings;
+				let command = `feishu2md.exe dl`;
+				if (isForce) {
+					command += ` --force`;
+				}
+				command += ` --wiki -o "${outPath}" "${wikiUrl}" --appId "${appId}" --appSecret "${appSecret}"`;
+
+				new Notice('Feishu to Markdown Sync: Starting...');
+
+				exec(command, (error, stdout, stderr) => {
+					if (error) {
+						new Notice(`Feishu to Markdown Sync Error: ${error.message}`);
+						console.error(`exec error: ${error}`);
+						return;
+					}
+					if (stderr) {
+						new Notice(`Feishu to Markdown Sync Stderr: ${stderr}`);
+						console.error(`stderr: ${stderr}`);
+						return;
+					}
+					new Notice('Feishu to Markdown Sync: Completed successfully!');
+					console.log(`stdout: ${stdout}`);
+				});
 			}
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -128,6 +175,60 @@ class SampleSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.mySetting)
 				.onChange(async (value) => {
 					this.plugin.settings.mySetting = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Force Update')
+			.setDesc('Enable to force update (--force)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.isForce)
+				.onChange(async (value) => {
+					this.plugin.settings.isForce = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Output Path')
+			.setDesc('Path for the output files (-o)')
+			.addText(text => text
+				.setPlaceholder('Enter output path')
+				.setValue(this.plugin.settings.outPath)
+				.onChange(async (value) => {
+					this.plugin.settings.outPath = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Wiki URL')
+			.setDesc('Feishu Wiki URL')
+			.addText(text => text
+				.setPlaceholder('Enter Feishu Wiki URL')
+				.setValue(this.plugin.settings.wikiUrl)
+				.onChange(async (value) => {
+					this.plugin.settings.wikiUrl = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('App ID')
+			.setDesc('Feishu App ID')
+			.addText(text => text
+				.setPlaceholder('Enter App ID')
+				.setValue(this.plugin.settings.appId)
+				.onChange(async (value) => {
+					this.plugin.settings.appId = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('App Secret')
+			.setDesc('Feishu App Secret')
+			.addText(text => text
+				.setPlaceholder('Enter App Secret')
+				.setValue(this.plugin.settings.appSecret)
+				.onChange(async (value) => {
+					this.plugin.settings.appSecret = value;
 					await this.plugin.saveSettings();
 				}));
 	}
