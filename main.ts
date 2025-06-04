@@ -3,19 +3,17 @@ import { exec } from 'child_process';
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-	mySetting: string;
+interface MyPluginSettings {	
+	feishu2mdPath: string;
 	isForce: boolean;
 	outPath: string;
 	wikiUrl: string;
 	appId: string;
 	appSecret: string;
 	enableLog: boolean;
-	feishu2mdPath: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default',
+const DEFAULT_SETTINGS: MyPluginSettings = {	
 	isForce: false,
 	outPath: 'D:/Git/Note/note_obsidian/3.商业/Vectora',
 	wikiUrl: 'https://hcn12zstv951.feishu.cn/wiki/settings/7510965301876064257',
@@ -65,8 +63,8 @@ export default class MyPlugin extends Plugin {
 				const { isForce, outPath, wikiUrl, appId, appSecret, enableLog, feishu2mdPath } = this.settings;
 				const command = feishu2mdPath || 'feishu2md.exe';
 				let args = [
-					'--outPath', outPath,
-					'--wikiUrl', wikiUrl,
+					'-o', outPath,
+					'--wiki', wikiUrl,
 					'--appId', appId,
 					'--appSecret', appSecret
 				];
@@ -81,7 +79,7 @@ export default class MyPlugin extends Plugin {
 					console.log(`Executing command: ${command} ${args.join(' ')}`);
 				}
 
-				const child = execFile(command, args, (error, stdout, stderr) => {
+				const child = exec(command + ' dl ' + args.join(' '), (error, stdout, stderr) => {
 					notification.hide();
 					if (error) {
 						new Notice(`Feishu to Markdown Sync: 同步失败 - ${error.message}`);
@@ -183,17 +181,17 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
-
+        new Setting(containerEl)
+        .setName('Feishu2md Path')
+        .setDesc('Specify the path to the feishu2md.exe executable. If not set, it will default to feishu2md.exe in the system PATH.')
+        .addText(text => text
+            .setPlaceholder('Enter feishu2md.exe path')
+            .setValue(this.plugin.settings.feishu2mdPath)
+            .onChange(async (value) => {
+                this.plugin.settings.feishu2mdPath = value;
+                await this.plugin.saveSettings();
+            }));
+	
 		new Setting(containerEl)
 			.setName('Force Update')
 			.setDesc('Enable to force update (--force)')
@@ -258,15 +256,5 @@ class SampleSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		new Setting(containerEl)
-			.setName('Feishu2md Path')
-			.setDesc('Specify the path to the feishu2md.exe executable. If not set, it will default to feishu2md.exe in the system PATH.')
-			.addText(text => text
-				.setPlaceholder('Enter feishu2md.exe path')
-				.setValue(this.plugin.settings.feishu2mdPath)
-				.onChange(async (value) => {
-					this.plugin.settings.feishu2mdPath = value;
-					await this.plugin.saveSettings();
-				}));
 	}
 }
