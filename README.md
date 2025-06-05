@@ -18,7 +18,7 @@
 ### 前提条件
 
 - 已安装 [Obsidian](https://obsidian.md/) 应用（最低版本要求：0.15.0）
-- 已安装 [feishu2md](https://github.com/Leizhenpeng/feishu2md) 工具（或在插件设置中指定路径）
+- 已安装 [feishu2md](https://github.com/qiaogaojian/contribute_feishu2md) 工具（或在插件设置中指定路径）
 
 ### 安装步骤
 
