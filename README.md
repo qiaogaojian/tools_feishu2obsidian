@@ -1,94 +1,54 @@
-# Obsidian Sample Plugin
+# Obsidian Feishu to Markdown Sync Plugin
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+通过 feishu2md.exe 实现飞书文档与Markdown的自动化同步。
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## 主要功能
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+- 🛠 **飞书配置管理**  
+  配置飞书应用ID/密钥、知识库URL、输出路径
+- ⚙ **执行参数控制**  
+  支持强制覆盖模式(isForce)、日志开关(enableLog)
+- 📂 **自定义执行路径**  
+  支持指定 feishu2md.exe 的绝对路径
+- ⌨ **快捷执行**  
+  Ctrl+Alt+O 触发文档同步
+- 📊 **实时通知**  
+  显示同步进度通知和错误提示
 
-## First time developing plugins?
+## 使用方法
 
-Quick starting guide for new plugin devs:
+1. 在设置界面填写飞书应用凭证
+2. 配置本地输出路径（默认：D:\feishu2md_output）
+3. 设置 feishu2md.exe 路径（可选）
+4. 使用 Ctrl+Alt+O 执行同步
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## 开发指南
 
-## Releasing new releases
+```bash
+# 安装依赖
+npm install
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+# 开发模式 (实时编译)
+npm run dev
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+# 生产构建
+npm run build
 ```
 
-If you have multiple URLs, you can also do:
+## 配置参数说明
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
+| 参数名称 | 类型 | 默认值 | 说明 |
+|----------|------|--------|-----|
+| appId | string | - | 飞书开放平台应用ID |
+| appSecret | string | - | 飞书应用密钥 |
+| wikiUrl | string | https://example.com/wiki | 知识库URL |
+| outPath | string | D:\feishu2md_output | 文档输出路径 |
+| isForce | boolean | false | 强制覆盖已有文件 |
+| enableLog | boolean | false | 启用执行日志 |
+| feishu2mdPath | string | feishu2md.exe | 执行器绝对路径 |
 
-## API Documentation
+## 依赖管理
 
-See https://github.com/obsidianmd/obsidian-api
+- [feishu2md](https://github.com/org/feishu2md) 文档转换工具
+- Obsidian Plugin API v1.2.0+
+- Node.js 18+
