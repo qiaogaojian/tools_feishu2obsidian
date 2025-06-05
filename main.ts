@@ -64,9 +64,9 @@ export default class MyPlugin extends Plugin {
 				const command = feishu2mdPath || 'feishu2md.exe';
 				let args = [
 					'-o', outPath,
-					'--wiki', wikiUrl,
 					'--appId', appId,
-					'--appSecret', appSecret
+					'--appSecret', appSecret,
+					'--wiki', wikiUrl
 				];
 
 				if (isForce) {
